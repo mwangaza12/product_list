@@ -7,19 +7,23 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1 class="title">Desserts</h1>
-    
-    <div class="main-content">
-      <div class="products list"></div>
+    <div class="container">
+        <h1 class="title">Desserts</h1>
+        
+        <div class="main-content">
+        <div class="products list"></div>
 
-      <div class="cart">
-        <h2 class="cart-title">Your Cart (0)</h2>
-        <img src="https://via.placeholder.com/150x100" alt="Empty Cart" class="cart-img">
-        <p class="cart-empty">Your added items will appear here</p>
-      </div>
+        <div class="cart">
+            <h2 class="cart-title">Your Cart (0)</h2>
+            <img src="https://via.placeholder.com/150x100" alt="Empty Cart" class="cart-img">
+            <p class="cart-empty">Your added items will appear here</p>
+            <button class="confirm-order">Confirm Order</button>
+        </div>
+        </div>
     </div>
-  </div>
+    <div id="modal" class="modal hidden">
+      <div class="modal-content"></div>
+    </div>
 
   <script src="script.js"></script>
 </body>
