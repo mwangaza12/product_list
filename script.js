@@ -4,10 +4,10 @@ let cart = [];
 // Fetch product data
 async function getData() {
   const response = await fetch("data.json");
-  const dataFromJSON = await response.json(); // ← Parse JSON here
+  const dataFromJSON = await response.json();
   data = dataFromJSON.map((item, index) => ({
-    id: `product-${index}`,
-    title: item.name,
+    id: index,
+    name: item.name,
     category: item.category,
     price: item.price,
     image: item.image.desktop,
@@ -22,27 +22,96 @@ function renderProducts(products) {
   products.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" class="card-img">
-      <button class="add-to-cart"><img src="./assets/images/icon-add-to-cart.svg" alt="cart"> Add to Cart</button>
-      <div class="card-body">
-        <p class="category">${item.category}</p>
-        <h2 class="product-name">${item.name}</h2>
-        <p class="price">$${item.price.toFixed(2)}</p>
-      </div>
+    card.setAttribute('data-id', item.id); // Add this
+    const isInCart = cart.find(p => p.id === item.id);
+
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.name;
+    img.className = 'card-img';
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+
+    const addToCartBtn = document.createElement('button');
+    addToCartBtn.className = 'add-to-cart';
+    addToCartBtn.innerHTML = `<img src="./assets/images/icon-add-to-cart.svg" alt="cart"> Add to Cart`;
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+    cardBody.innerHTML = `
+      <p class="category">${item.category}</p>
+      <h2 class="product-name">${item.name}</h2>
+      <p class="price">$${item.price.toFixed(2)}</p>
     `;
-    card.querySelector('.add-to-cart').addEventListener('click', () => addToCart(item));
+
+    buttonContainer.appendChild(addToCartBtn);
+    card.append(img, buttonContainer, cardBody);
     list.appendChild(card);
+
+    addToCartBtn.addEventListener('click', () => {
+      addToCart(item);
+      showStepper(buttonContainer, item);
+    });
+
+    if (isInCart) {
+      showStepper(buttonContainer, item);
+    }
   });
+}
+
+function showStepper(container, item) {
+  container.innerHTML = '';
+
+  const stepper = document.createElement('div');
+  stepper.className = 'stepper';
+
+  const decreaseBtn = document.createElement('button');
+  decreaseBtn.textContent = '−';
+
+  const qtySpan = document.createElement('span');
+  qtySpan.className = 'qty';
+  qtySpan.textContent = cart.find(i => i.id === item.id)?.quantity || 1;
+
+  const increaseBtn = document.createElement('button');
+  increaseBtn.textContent = '+';
+
+  decreaseBtn.addEventListener('click', () => {
+    changeQuantity(item.id, -1);
+    const inCart = cart.find(i => i.id === item.id);
+    if (!inCart) {
+      showAddToCart(container, item);
+    } else {
+      qtySpan.textContent = inCart.quantity;
+    }
+  });
+
+  increaseBtn.addEventListener('click', () => {
+    changeQuantity(item.id, 1);
+    const updated = cart.find(i => i.id === item.id);
+    qtySpan.textContent = updated.quantity;
+  });
+
+  stepper.append(decreaseBtn, qtySpan, increaseBtn);
+  container.appendChild(stepper);
+}
+
+function showAddToCart(container, item) {
+  container.innerHTML = '';
+
+  const addToCartBtn = document.createElement('button');
+  addToCartBtn.className = 'add-to-cart';
+  addToCartBtn.innerHTML = `<img src="./assets/images/icon-add-to-cart.svg" alt="cart"> Add to Cart`;
+  addToCartBtn.addEventListener('click', () => {
+    addToCart(item);
+    showStepper(container, item);
+  });
+
+  container.appendChild(addToCartBtn);
 }
 
 // Add item to cart
 function addToCart(product) {
-  if (!product.id) {
-    // Fallback ID using name + category combo
-    product.id = `${product.name}-${product.category}`;
-  }
-
   const existing = cart.find(item => item.id === product.id);
   if (existing) {
     existing.quantity += 1;
@@ -50,26 +119,34 @@ function addToCart(product) {
     cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1 });
   }
   updateCartUI();
+  const container = document.querySelector(`.card[data-id="${product.id}"] .button-container`);
+  if (container) showStepper(container, product);
 }
-
-
 
 // Remove item completely
 function removeFromCart(productId) {
   cart = cart.filter(item => item.id !== productId);
   updateCartUI();
+  const container = document.querySelector(`.card[data-id="${productId}"] .button-container`);
+  const product = data.find(p => p.id === productId);
+  if (container && product) showAddToCart(container, product);
 }
 
 // Increase/decrease quantity
 function changeQuantity(productId, delta) {
-  const item = cart.find(item => item.id === productId);
-  if (!item) return;
-  item.quantity += delta;
-  if (item.quantity <= 0) {
-    removeFromCart(productId);
-  } else {
-    updateCartUI();
-  }
+    const item = cart.find(item => item.id === productId);
+    if (!item) return;
+
+    item.quantity += delta;
+
+    if (item.quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      updateCartUI();
+      const container = document.querySelector(`.card[data-id="${productId}"] .button-container`);
+      const product = data.find(p => p.id === productId);
+      if (container && product) showStepper(container, product);
+    }
 }
 
 // Update cart interface
@@ -79,10 +156,8 @@ function updateCartUI() {
   const cartEmpty = document.querySelector('.cart-empty');
   const cartDiv = document.querySelector('.cart');
 
-  // Update cart count
   cartTitle.textContent = `Your Cart (${cart.reduce((sum, item) => sum + item.quantity, 0)})`;
 
-  // Remove previous items
   cartDiv.querySelectorAll('.cart-item').forEach(el => el.remove());
 
   if (cart.length > 0) {
@@ -96,16 +171,10 @@ function updateCartUI() {
         <p>${item.name}</p>
         <p>$${item.price.toFixed(2)} @ ${item.quantity}</p>
         <div class="controls">
-          <button class="decrease">-</button>
-          <button class="increase">+</button>
-          <button class="remove">🗑️</button>
+          <button class="remove"><img src="./assets/images/icon-remove-item.svg"></button>
         </div>
       `;
-
-      itemDiv.querySelector('.increase').addEventListener('click', () => changeQuantity(item.id, 1));
-      itemDiv.querySelector('.decrease').addEventListener('click', () => changeQuantity(item.id, -1));
       itemDiv.querySelector('.remove').addEventListener('click', () => removeFromCart(item.id));
-
       cartDiv.appendChild(itemDiv);
     });
   } else {
@@ -118,6 +187,7 @@ function updateCartUI() {
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.confirm-order')?.addEventListener('click', () => {
     if (cart.length === 0) return alert("Cart is empty.");
+    populateModal();
     document.getElementById('modal').classList.remove('hidden');
   });
 
@@ -135,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function populateModal() {
   const modalContent = document.querySelector('.modal-content');
-  modalContent.innerHTML = ''; // Clear previous content
+  modalContent.innerHTML = '';
 
   const header = document.createElement('div');
   header.className = 'confirmation-header';
@@ -160,7 +230,7 @@ function populateModal() {
     img.alt = item.name;
 
     const infoDiv = document.createElement('div');
-    infoDiv.innerHTML = `<p>${item.name}</p><p>${item.quantity}x $${item.price.toFixed(2)}</p>`;
+    infoDiv.innerHTML = `<p>${item.name}</p><p><span>${item.quantity}x </span> @ $${item.price.toFixed(2)}</p>`;
 
     const price = document.createElement('p');
     price.className = 'price';
@@ -187,9 +257,3 @@ function populateModal() {
 
   modalContent.append(header, summaryList, totalDiv, newOrderBtn);
 }
-
-document.querySelector('.confirm-order')?.addEventListener('click', () => {
-  if (cart.length === 0) return alert("Cart is empty.");
-  populateModal();
-  document.getElementById('modal').classList.remove('hidden');
-});

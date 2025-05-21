@@ -129,29 +129,29 @@ body {
     color: hsl(14, 86%, 42%);
 }
 
-.add-to-cart:hover {
-    background-color: hsl(14, 86%, 35%);
-}
-
 /* Stepper (Quantity Control) */
 .stepper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: hsl(20, 50%, 98%);
+    justify-content: space-between;
+    background: hsl(14, 86%, 42%);
     border-radius: 9999px;
-    border: 2px solid hsl(14, 86%, 42%);
-    color: hsl(14, 86%, 42%);
+    color: hsl(20, 50%, 98%);
     padding: 0.3rem 0.75rem;
     font-weight: bold;
-    gap: 0.75rem;
-    margin-top: auto;
+    width: 60%;
+    position: relative;
+    bottom: 0;
+    top: -20px;
+    left: 45px;
+    gap: 0.4rem;
 }
 
 .stepper button {
+    border: 1px solid wheat;
+    border-radius: 100%;
     background: none;
-    border: none;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     font-weight: bold;
     color: inherit;
     cursor: pointer;
@@ -299,8 +299,11 @@ body {
 
 .order-summary {
     list-style: none;
+    background-color: hsl(13, 31%, 94%);
     padding: 0;
     margin: 0 0 1.5rem 0;
+    border-radius: 1rem;
+    padding: 1rem;
 }
 
 .order-summary .item {
