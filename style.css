@@ -80,7 +80,8 @@ body {
 }
 
 .card-body {
-    padding: 1rem;
+    margin: 0;
+    padding: 0.5rem;
 }
 
 .category {
@@ -107,16 +108,25 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    background-color: hsl(14, 86%, 42%);
-    color: white;
+    background-color: hsl(20, 50%, 98%);
+    color: hsl(14, 65%, 9%);
     font-weight: 600;
-    border: none;
+    border: 1px solid hsl(14, 65%, 9%);
     border-radius: 9999px;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     cursor: pointer;
     margin-top: auto;
     transition: background-color 0.3s;
+    width: 60%;
+    position: relative;
+    bottom: 0;
+    top: -20px;
+    left: 45px;
+}
+
+.add-to-cart span{
+    color: hsl(14, 86%, 42%);
 }
 
 .add-to-cart:hover {
@@ -331,7 +341,7 @@ body {
     border: none;
     background-color:hsl(14, 86%, 42%);
     color: white;
-    border-radius: 8px;
+    border-radius: 9999px;
     font-size: 1rem;
     cursor: pointer;
 }

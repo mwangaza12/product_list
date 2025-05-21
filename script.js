@@ -3,8 +3,15 @@ let cart = [];
 
 // Fetch product data
 async function getData() {
-  const response = await fetch("./data.json");
-  data = await response.json();
+  const response = await fetch("data.json");
+  const dataFromJSON = await response.json(); // ← Parse JSON here
+  data = dataFromJSON.map((item, index) => ({
+    id: `product-${index}`,
+    title: item.name,
+    category: item.category,
+    price: item.price,
+    image: item.image.desktop,
+  }));
   renderProducts(data);
 }
 
@@ -16,8 +23,8 @@ function renderProducts(products) {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <img src="${item.image.desktop}" alt="${item.name}" class="card-img">
-      <button class="add-to-cart">🛒 Add to Cart</button>
+      <img src="${item.image}" alt="${item.name}" class="card-img">
+      <button class="add-to-cart"><img src="./assets/images/icon-add-to-cart.svg" alt="cart"> Add to Cart</button>
       <div class="card-body">
         <p class="category">${item.category}</p>
         <h2 class="product-name">${item.name}</h2>
@@ -133,7 +140,7 @@ function populateModal() {
   const header = document.createElement('div');
   header.className = 'confirmation-header';
   header.innerHTML = `
-    <span class="checkmark">✅</span>
+    <span class="checkmark"><img src="./assets/images/icon-order-confirmed.svg" alt="Empty Cart" class="cart-img"></span>
     <h2>Order Confirmed</h2>
     <p>We hope you enjoy your food!</p>
   `;
@@ -149,7 +156,7 @@ function populateModal() {
 
     const img = document.createElement('img');
     const product = data.find(p => p.id === item.id);
-    img.src = product.image.desktop;
+    img.src = product.image;
     img.alt = item.name;
 
     const infoDiv = document.createElement('div');
