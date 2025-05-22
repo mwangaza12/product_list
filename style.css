@@ -137,7 +137,7 @@ body {
     background: hsl(14, 86%, 42%);
     border-radius: 9999px;
     color: hsl(20, 50%, 98%);
-    padding: 0.3rem 0.75rem;
+    padding: 0.5rem 1rem;
     font-weight: bold;
     width: 60%;
     position: relative;
@@ -202,10 +202,11 @@ body {
 
 .cart-remove {
     background: none;
-    border: none;
     color: #ccc;
     font-size: 1rem;
     cursor: pointer;
+    border-radius: 100%;
+    border: 1px solid;
 }
 
 /* Cart Footer */
@@ -213,8 +214,8 @@ body {
     border-top: 1px solid #ddd;
     padding-top: 1rem;
     font-size: 1.1rem;
-    font-weight: bold;
     display: flex;
+    color: hsl(14, 65%, 9%);
     justify-content: space-between;
 }
 
@@ -288,14 +289,10 @@ body {
 }
 
 .confirmation-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 1.5rem;
 }
 
-.confirmation-header .checkmark {
-    font-size: 2rem;
-    display: block;
-}
 
 .order-summary {
     list-style: none;

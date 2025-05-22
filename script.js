@@ -159,9 +159,12 @@ function updateCartUI() {
 
   cartTitle.textContent = `Your Cart (${cart.reduce((sum, item) => sum + item.quantity, 0)})`;
 
+  // Clear previous cart items, total, and confirm button
   cartDiv.querySelectorAll('.cart-item').forEach(el => el.remove());
   const existingTotalDiv = cartDiv.querySelector('.cart-total');
   if (existingTotalDiv) existingTotalDiv.remove();
+  const existingBtn = cartDiv.querySelector('.confirm-order');
+  if (existingBtn) existingBtn.remove();
 
   if (cart.length > 0) {
     cartImg.style.display = 'none';
@@ -175,7 +178,7 @@ function updateCartUI() {
         <p>${item.name}</p>
         <p>$${item.price.toFixed(2)} @ ${item.quantity}</p>
         <div class="controls">
-          <button class="remove"><img src="./assets/images/icon-remove-item.svg"></button>
+          <button class="remove cart-remove"><img src="./assets/images/icon-remove-item.svg"></button>
         </div>
       `;
       itemDiv.querySelector('.remove').addEventListener('click', () => removeFromCart(item.id));
@@ -185,13 +188,25 @@ function updateCartUI() {
     // Add total at the bottom
     const totalDiv = document.createElement('div');
     totalDiv.className = 'cart-total';
-    totalDiv.innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
+    totalDiv.innerHTML = `Order Total: <strong>$${total.toFixed(2)}</strong>`;
     cartDiv.appendChild(totalDiv);
+
+    // Add confirm order button below total
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'confirm-order';
+    confirmBtn.textContent = 'Confirm Order';
+    confirmBtn.addEventListener('click', () => {
+      populateModal();
+      document.getElementById('modal').classList.remove('hidden');
+    });
+    cartDiv.appendChild(confirmBtn);
+
   } else {
     cartImg.style.display = 'block';
     cartEmpty.style.display = 'block';
   }
 }
+
 
 
 // Modal handling
@@ -221,7 +236,7 @@ function populateModal() {
   const header = document.createElement('div');
   header.className = 'confirmation-header';
   header.innerHTML = `
-    <span class="checkmark"><img src="./assets/images/icon-order-confirmed.svg" alt="Empty Cart" class="cart-img"></span>
+    <img class="checkmark" src="./assets/images/icon-order-confirmed.svg" alt="Empty Cart">
     <h2>Order Confirmed</h2>
     <p>We hope you enjoy your food!</p>
   `;
