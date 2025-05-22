@@ -155,10 +155,13 @@ function updateCartUI() {
   const cartImg = document.querySelector('.cart-img');
   const cartEmpty = document.querySelector('.cart-empty');
   const cartDiv = document.querySelector('.cart');
+  let total = 0;
 
   cartTitle.textContent = `Your Cart (${cart.reduce((sum, item) => sum + item.quantity, 0)})`;
 
   cartDiv.querySelectorAll('.cart-item').forEach(el => el.remove());
+  const existingTotalDiv = cartDiv.querySelector('.cart-total');
+  if (existingTotalDiv) existingTotalDiv.remove();
 
   if (cart.length > 0) {
     cartImg.style.display = 'none';
@@ -167,6 +170,7 @@ function updateCartUI() {
     cart.forEach(item => {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'cart-item';
+      total += item.price * item.quantity;
       itemDiv.innerHTML = `
         <p>${item.name}</p>
         <p>$${item.price.toFixed(2)} @ ${item.quantity}</p>
@@ -177,11 +181,18 @@ function updateCartUI() {
       itemDiv.querySelector('.remove').addEventListener('click', () => removeFromCart(item.id));
       cartDiv.appendChild(itemDiv);
     });
+
+    // Add total at the bottom
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'cart-total';
+    totalDiv.innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
+    cartDiv.appendChild(totalDiv);
   } else {
     cartImg.style.display = 'block';
     cartEmpty.style.display = 'block';
   }
 }
+
 
 // Modal handling
 document.addEventListener('DOMContentLoaded', () => {
